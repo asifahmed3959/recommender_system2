@@ -74,14 +74,37 @@ def get_top_n(predictions, n=10):
     return top_n
 
 
+# # TODO: change the default Entry Point text to handleWebhook
+#
+# def handleWebhook(request):
+#
+#     req = request.get_json()
+#
+#     responseText = ""
+#     intent = req["queryResult"]["intent"]["user_id"]
+#
+#     if intent == "Default Welcome Intent":
+#         responseText = "Hello from a GCF Webhook"
+#     elif intent == "get-agent-name":
+#         responseText = "My name is Flowhook"
+#     else:
+#         responseText = f"There are no fulfillment responses defined for Intent {intent}"
+#
+#     # You can also use the google.cloud.dialogflowcx_v3.types.WebhookRequest protos instead of manually writing the json object
+#     res = {"fulfillmentMessages": [{"text": {"text": [responseText]}}]}
+#
+#     return res
+
+
+
 class WeightPrediction(APIView):
     def post(self, request):
         try:
             data = request.data
             user_id = data['id']
 
-            # books_metadata, df = ApiConfig._pd_book_metadata, ApiConfig._pd_sentiment_data
-            books_metadata, df = prepare_dataset()
+            books_metadata, df = ApiConfig._pd_book_metadata, ApiConfig._pd_sentiment_data
+            # books_metadata, df = prepare_dataset()
 
             user_info_data = get_user_info(df, user_id)
 
@@ -96,3 +119,43 @@ class WeightPrediction(APIView):
             return Response ("some error occured", status=400)
 
         return Response(response_data, status=200)
+
+
+# {
+#   "responseId": "response-id",
+#   "session": "projects/project-id/agent/sessions/session-id",
+#   "queryResult": {
+#     "queryText": "End-user expression",
+#     "parameters": {
+#       "param-name": "param-value"
+#     },
+#     "allRequiredParamsPresent": true,
+#     "fulfillmentText": "Response configured for matched intent",
+#     "fulfillmentMessages": [
+#       {
+#         "text": {
+#           "text": [
+#             "Response configured for matched intent"
+#           ]
+#         }
+#       }
+#     ],
+#     "outputContexts": [
+#       {
+#         "name": "projects/project-id/agent/sessions/session-id/contexts/context-name",
+#         "lifespanCount": 5,
+#         "parameters": {
+#           "param-name": "param-value"
+#         }
+#       }
+#     ],
+#     "intent": {
+#       "name": "projects/project-id/agent/intents/intent-id",
+#       "displayName": "matched-intent-name"
+#     },
+#     "intentDetectionConfidence": 1,
+#     "diagnosticInfo": {},
+#     "languageCode": "en"
+#   },
+#   "originalDetectIntentRequest": {}
+# }

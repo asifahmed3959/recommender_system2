@@ -11,6 +11,6 @@ class ApiConfig(AppConfig):
     MODEL_FILE = os.path.join(settings.MODELS, "svdModel.joblib")
     book_data_path = os.path.join(settings.MODELS, "books_data.txt")
     sentiment_data_path = os.path.join(settings.MODELS, "sentiment_data_final_final.csv")
-    # _pd_book_metadata = pd.read_csv(book_data_path)
-    # _pd_sentiment_data = pd.read_csv(sentiment_data_path)
+    _pd_book_metadata = pd.read_csv(book_data_path)
+    _pd_sentiment_data = pd.read_csv(sentiment_data_path)
     model = joblib.load(MODEL_FILE)
