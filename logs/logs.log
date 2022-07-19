@@ -1,0 +1,19 @@
+2022-07-19 13:49:06,897 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2022-07-19 13:50:13,337 [ERROR] api.views: 'queryResult'
+2022-07-19 13:50:13,339 [WARNING] django.request: Bad Request: /api/v1/weight
+2022-07-19 13:56:19,518 [INFO] django.utils.autoreload: /home/itachiuchiha/Downloads/goodreaddataset/project/recommendation/api/views.py changed, reloading.
+2022-07-19 13:56:29,492 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2022-07-19 13:57:02,002 [ERROR] api.views: 'queryResult'
+2022-07-19 13:57:02,003 [WARNING] django.request: Bad Request: /api/v1/weight
+2022-07-19 13:57:22,258 [INFO] django.utils.autoreload: /home/itachiuchiha/Downloads/goodreaddataset/project/recommendation/api/views.py changed, reloading.
+2022-07-19 13:57:29,610 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2022-07-19 13:57:31,423 [ERROR] api.views: 'queryResult'
+2022-07-19 13:57:31,423 [WARNING] django.request: Bad Request: /api/v1/weight
+2022-07-19 13:58:01,783 [INFO] django.utils.autoreload: /home/itachiuchiha/Downloads/goodreaddataset/project/recommendation/api/views.py changed, reloading.
+2022-07-19 13:58:08,747 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2022-07-19 13:58:10,575 [ERROR] api.views: 'list' object has no attribute 'items'
+2022-07-19 13:58:10,576 [WARNING] django.request: Bad Request: /api/v1/weight
+2022-07-19 13:58:28,674 [INFO] django.utils.autoreload: /home/itachiuchiha/Downloads/goodreaddataset/project/recommendation/api/views.py changed, reloading.
+2022-07-19 13:58:34,985 [INFO] django.utils.autoreload: Watching for file changes with StatReloader
+2022-07-19 13:58:59,955 [INFO] django.utils.autoreload: /home/itachiuchiha/Downloads/goodreaddataset/project/recommendation/api/views.py changed, reloading.
+2022-07-19 13:59:06,436 [INFO] django.utils.autoreload: Watching for file changes with StatReloader

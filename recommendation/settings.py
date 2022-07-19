@@ -9,13 +9,15 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import os
 
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
-import os
+
 MODELS = os.path.join(BASE_DIR, 'scripts')
 
 
@@ -75,6 +77,65 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'recommendation.wsgi.application'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'default': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/logs.log'),
+            'maxBytes': 1024*1024*5,
+            'backupCount': 5,
+            'formatter': 'standard'
+        },
+        # 'request_handler': {
+        #     'level': 'DEBUG',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': os.path.join(SITE_ROOT, 'logs/django-requests.log'),
+        #     'maxBytes': 1024*1024*5,
+        #     'backupCount': 5,
+        #     'formatter': 'standard'
+        # },
+        # 'mail_admins': {
+        #     'level': 'ERROR',
+        #     'class': 'django.utils.log.AdminEmailHandler',
+        #     'include_html': True,
+        # },
+        'data_storage':{
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/data_logs.log'),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'standard'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['default'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        # 'django.request': {
+        #     'handlers': ['request_handler', 'mail_admins'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        # },
+        'data_logger': {
+            'handlers': ['data_storage'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+
+    },
+}
 
 
 # Database

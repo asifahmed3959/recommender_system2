@@ -3,9 +3,11 @@ import numpy as np
 import pandas as pd
 import difflib
 import random
+import logging
 
 from django.apps import AppConfig
 from django.conf import settings
+from django.http import JsonResponse
 
 from .apps import ApiConfig
 
@@ -13,6 +15,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from collections import defaultdict
+
+
+class Logger():
+    @staticmethod
+    def getLogger():
+        return logging.getLogger(__name__)
 
 
 def prepare_dataset():
@@ -43,6 +51,7 @@ def prediction_with_algo(algo, testset):
 
 
 def get_book_list_ids(top_n):
+    iid_set = []
     for uid, user_ratings in top_n.items():
         uid, iid_set = (uid, [iid for (iid, _) in user_ratings])
     return iid_set
@@ -76,24 +85,21 @@ def get_top_n(predictions, n=10):
 
 # # TODO: change the default Entry Point text to handleWebhook
 #
-# def handleWebhook(request):
-#
-#     req = request.get_json()
-#
-#     responseText = ""
-#     intent = req["queryResult"]["intent"]["user_id"]
-#
-#     if intent == "Default Welcome Intent":
-#         responseText = "Hello from a GCF Webhook"
-#     elif intent == "get-agent-name":
-#         responseText = "My name is Flowhook"
-#     else:
-#         responseText = f"There are no fulfillment responses defined for Intent {intent}"
-#
-#     # You can also use the google.cloud.dialogflowcx_v3.types.WebhookRequest protos instead of manually writing the json object
-#     res = {"fulfillmentMessages": [{"text": {"text": [responseText]}}]}
-#
-#     return res
+def handleWebhook(book_list):
+    if len(book_list) == 0:
+        return "Sorry it seems you have never read a book here, how about you try yourself a book, " \
+               "and we will recommend books later"
+
+    book_recommendation = "These are the books we suggest: "
+
+    for i in range(len(book_list) - 1):
+        book_recommendation += book_list[i]['title'] + ", "
+
+    book_recommendation += book_list[i]['title'] + "."
+
+    book_recommendation += " Those were our suggestions hope you love them."
+
+    return book_recommendation
 
 
 
@@ -101,11 +107,15 @@ class WeightPrediction(APIView):
     def post(self, request):
         try:
             data = request.data
-            user_id = data['id']
 
+            user_id = int(data["queryResult"]["parameters"]["user_id"])
+            # user_id = 1000
+
+            print(user_id)
+            #
             books_metadata, df = ApiConfig._pd_book_metadata, ApiConfig._pd_sentiment_data
-            # books_metadata, df = prepare_dataset()
-
+            # # books_metadata, df = prepare_dataset()
+            #
             user_info_data = get_user_info(df, user_id)
 
             test_set = prep_for_prediction(user_info_data)
@@ -115,47 +125,15 @@ class WeightPrediction(APIView):
             recommended_book_ids = get_book_list_ids(top_n)
             response_data = get_book_info(recommended_book_ids, books_metadata)
 
+            response_data = handleWebhook(response_data)
+
         except Exception as e:
+            print(e)
+            Logger.getLogger().error(e)
             return Response ("some error occured", status=400)
 
-        return Response(response_data, status=200)
+        response = JsonResponse({"fulfillmentMessages": [{"text": {"text": [response_data]}}]}, status=200)
+        response['Retry-after'] = 345  # seconds
+        response['Token'] = request.META['HTTP_TOKEN']
 
-
-# {
-#   "responseId": "response-id",
-#   "session": "projects/project-id/agent/sessions/session-id",
-#   "queryResult": {
-#     "queryText": "End-user expression",
-#     "parameters": {
-#       "param-name": "param-value"
-#     },
-#     "allRequiredParamsPresent": true,
-#     "fulfillmentText": "Response configured for matched intent",
-#     "fulfillmentMessages": [
-#       {
-#         "text": {
-#           "text": [
-#             "Response configured for matched intent"
-#           ]
-#         }
-#       }
-#     ],
-#     "outputContexts": [
-#       {
-#         "name": "projects/project-id/agent/sessions/session-id/contexts/context-name",
-#         "lifespanCount": 5,
-#         "parameters": {
-#           "param-name": "param-value"
-#         }
-#       }
-#     ],
-#     "intent": {
-#       "name": "projects/project-id/agent/intents/intent-id",
-#       "displayName": "matched-intent-name"
-#     },
-#     "intentDetectionConfidence": 1,
-#     "diagnosticInfo": {},
-#     "languageCode": "en"
-#   },
-#   "originalDetectIntentRequest": {}
-# }
+        return response
